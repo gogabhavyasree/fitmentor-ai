@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <style>
+      body { background: #081c2e; color: white; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+      .card { background: #102b43; padding: 32px; border-radius: 14px; width: 420px; }
+      input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; }
+      button { width: 100%; background: #24d2a3; color: #061821; padding: 12px; border: none; border-radius: 8px; font-weight: bold; }
+      a { color: #7fe1c9; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>Register</h2>
+      <form method="POST" action="/api/auth/register">
+        <input name="name" type="text" placeholder="Name" required />
+        <input name="email" type="email" placeholder="Email" required />
+        <input name="password" type="password" placeholder="Password" required />
+        <input name="age" type="number" placeholder="Age" required />
+        <select name="goal">
+          <option value="Weight Loss">Weight Loss</option>
+          <option value="Muscle Gain">Muscle Gain</option>
+          <option value="General Fitness">General Fitness</option>
+        </select>
+        <button type="submit">Create Account</button>
+      </form>
+      <p>Already have an account? <a href="/login">Login here</a></p>
+    </div>
+  </body>
+</html>
