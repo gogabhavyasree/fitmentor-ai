@@ -39,6 +39,8 @@ The repository includes a Render Blueprint in `render.yaml`. To publish the app:
 
 Render builds the React app and serves it from the Express server, so the frontend and API use the same HTTPS origin. Render generates a session secret automatically. Do not publish `server/.env`, database credentials, or the local demo admin password.
 
+The Blueprint uses Render's free web-service plan for a no-cost demo. Free services spin down after inactivity, so the first request after a quiet period can take about a minute; their local filesystem is temporary. Keep user and session data in MongoDB Atlas, not on the Render filesystem. Render's free plan has usage limits and is intended for demos rather than production workloads.
+
 For an admin account on the deployed app, configure both `ADMIN_EMAIL` and `ADMIN_PASSWORD` as Render environment variables before the first deploy. Use a unique strong password. Production does not create the local demo admin account by default.
 
 The Admin link is shown only to accounts with the admin role. To initialize the first production admin, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in the server environment before startup; this securely creates or grants the admin role only to that configured email. Admin APIs re-check the role in MongoDB on every request. Local development retains the demo `admin@fitmentor.ai` / `admin123` account for convenience only.
