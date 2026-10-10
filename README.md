@@ -26,6 +26,7 @@ FitMentor AI is a student-built full-stack fitness and nutrition project built w
 ## Environment
 
 Create a `server/.env` file using the example in `server/.env.example`.
+For deployment, set `SESSION_SECRET` to a securely generated random value of at least 32 characters. In development, the server generates a temporary random secret when this value is omitted; existing sessions will expire when the server restarts.
 
 ## Deploy for a team review
 
@@ -37,13 +38,21 @@ The repository includes a Render Blueprint in `render.yaml`. To publish the app:
 4. When prompted for `MONGODB_URI`, enter the Atlas connection string, including the database name `fitmentor-ai`.
 5. Wait for the Render deploy to finish, then open its `onrender.com` URL and register a user. Share that HTTPS URL with your team leader.
 
-Render builds the React app and serves it from the Express server, so the frontend and API use the same HTTPS origin. Render generates a session secret automatically. Do not publish `server/.env`, database credentials, or the local demo admin password.
+Render builds the React app and serves it from the Express server, so the frontend and API use the same HTTPS origin. Render generates a session secret automatically. Do not publish `server/.env`, database credentials, or account passwords.
 
 The Blueprint uses Render's free web-service plan for a no-cost demo. Free services spin down after inactivity, so the first request after a quiet period can take about a minute; their local filesystem is temporary. Keep user and session data in MongoDB Atlas, not on the Render filesystem. Render's free plan has usage limits and is intended for demos rather than production workloads.
 
-For an admin account on the deployed app, configure both `ADMIN_EMAIL` and `ADMIN_PASSWORD` as Render environment variables before the first deploy. Use a unique strong password. Production does not create the local demo admin account by default.
+### Create the initial admin account
 
-The Admin link is shown only to accounts with the admin role. To initialize the first production admin, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in the server environment before startup; this securely creates or grants the admin role only to that configured email. Admin APIs re-check the role in MongoDB on every request. Local development retains the demo `admin@fitmentor.ai` / `admin123` account for convenience only.
+Admin accounts are never created automatically, and registration always creates a regular user. With MongoDB running, create the first administrator using the interactive command:
+
+```powershell
+npm run create-admin --prefix server
+```
+
+The command prompts for a name, email, and a password (the password is hidden while typing and must be at least 12 characters). It stores only a bcrypt hash, refuses to overwrite an existing account or initialize a second time, and can be run only against a database that does not already contain an admin. Run this command from the project root. For a deployed database, configure `MONGODB_URI` in `server/.env` to point to that database and run the command from a trusted machine before making the deployment available; do not add admin credentials to source control or public environment files.
+
+Sign in to the normal Login page with the admin email and password to open the Admin Dashboard. Admin API requests independently verify the account's current role in MongoDB. Once the initial admin exists, use **Admin → Users** to grant or remove admin roles; the last administrator cannot be demoted.
 
 ## Persistence and camera
 
@@ -57,4 +66,4 @@ Food nutrition values and meal costs are approximate per the serving size shown.
 
 ## Notes
 
-This project intentionally keeps the implementation straightforward and beginner-friendly so it is easy to explain in class presentations and lab viva. On first start, it creates a demo admin account: `admin@fitmentor.ai` / `admin123`. Change that password before using the application beyond a local demonstration.
+This project intentionally keeps the implementation straightforward and beginner-friendly so it is easy to explain in class presentations and lab viva.

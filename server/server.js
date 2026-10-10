@@ -5,6 +5,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const { randomBytes } = require('crypto');
 
 const authRoutes = require('./routes/authRoutes');
 const workoutRoutes = require('./routes/workoutRoutes');
@@ -13,24 +14,26 @@ const progressRoutes = require('./routes/progressRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const userRoutes = require('./routes/userRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
-const User = require('./models/User');
-const bcrypt = require('bcryptjs');
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const port = process.env.PORT || 5000;
 const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/fitmentor-ai';
+const isProduction = process.env.NODE_ENV === 'production';
+const sessionSecret = process.env.SESSION_SECRET || (isProduction ? '' : randomBytes(32).toString('hex'));
 let mongoConnected = false;
 
-if (process.env.NODE_ENV === 'production') {
+if (isProduction) {
   if (!process.env.MONGODB_URI) throw new Error('MONGODB_URI is required in production.');
-  if (!process.env.SESSION_SECRET) throw new Error('SESSION_SECRET is required in production.');
-  if (Boolean(process.env.ADMIN_EMAIL) !== Boolean(process.env.ADMIN_PASSWORD)) {
-    throw new Error('Set both ADMIN_EMAIL and ADMIN_PASSWORD to seed an admin account.');
+  if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
+    throw new Error('SESSION_SECRET must contain at least 32 characters in production.');
   }
   app.set('trust proxy', 1);
 } else {
+  if (!process.env.SESSION_SECRET) {
+    console.warn('SESSION_SECRET is not set; using a temporary random secret for this server process.');
+  }
   app.use(cors({
     origin: 'http://localhost:5173',
     credentials: true,
@@ -47,28 +50,6 @@ const connectDatabase = async () => {
     await mongoose.connect(mongoUri);
     mongoConnected = true;
     console.log('Connected to MongoDB');
-
-    const adminEmail = process.env.ADMIN_EMAIL || (process.env.NODE_ENV === 'production' ? null : 'admin@fitmentor.ai');
-    if (adminEmail) {
-      const existingAdmin = await User.findOne({ email: adminEmail });
-      if (existingAdmin && process.env.ADMIN_EMAIL && existingAdmin.role !== 'admin') {
-        existingAdmin.role = 'admin';
-        await existingAdmin.save();
-        console.log('Granted admin role to the configured admin account');
-      } else if (!existingAdmin) {
-        if (process.env.NODE_ENV === 'production' && !process.env.ADMIN_PASSWORD) return;
-        const password = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', 10);
-        await User.create({
-          name: 'Admin User',
-          email: adminEmail,
-          password,
-          age: 28,
-          goal: 'General Fitness',
-          role: 'admin',
-        });
-        console.log('Created configured admin user');
-      }
-    }
   } catch (error) {
     console.error('MongoDB connection failed. Persistent app APIs are unavailable until MongoDB is running.');
     console.error(error.message);
@@ -80,7 +61,7 @@ const startServer = async () => {
   await connectDatabase();
 
   app.use(session({
-    secret: process.env.SESSION_SECRET || 'fitmentor-ai-secret',
+    secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
     ...(mongoConnected ? {

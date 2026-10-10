@@ -59,6 +59,7 @@ router.post('/register', async (req, res, next) => {
       password: await bcrypt.hash(password, 10),
       age: ageNumber,
       goal: goal || 'General Fitness',
+      role: 'user',
     });
     const safeUser = await establishSession(req, user);
     res.status(201).json({ message: 'Registration successful.', user: safeUser });
