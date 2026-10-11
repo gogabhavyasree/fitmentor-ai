@@ -1,69 +1,204 @@
-# FitMentor AI
+# 💪 FitMentor AI — Your Trainer. Your Nutritionist. Your Gym Buddy.
 
-FitMentor AI is a student-built full-stack fitness and nutrition project built with React, Express, MongoDB, and EJS. It gives users a dashboard, AI-style workout generator, nutrition planner, mess assistant, progress tracking, and admin tools.
+**FitMentor AI** is a student-built full-stack fitness and nutrition web application designed to help users manage their workouts, make better food choices, and track their fitness journey in one place.
 
-## Folder structure
+The platform combines personalized workout planning, exercise assistance, nutrition guidance, budget-friendly diet planning, and progress tracking to make fitness more accessible and convenient.
 
-- `client/` — React frontend built with Vite and React Router.
-- `server/` — Express server, REST API, and EJS views.
-- `server/models/` — MongoDB/Mongoose data models.
-- `server/routes/` — Auth, workout, nutrition, progress, admin endpoints.
-- `server/utils/` — Rule-based workout generation and the shared food catalog.
-- `server/views/` — EJS pages for simple server-rendered views.
-- `client/src/pages/WeeklySchedulePage.jsx` — Saved weekly plan, in-app reminder schedule, and self-reported check-ins.
+🌐 **Live Website:** [FitMentor AI](https://fitmentor-ai-xbmr.onrender.com/login)
 
-## Getting started
+---
 
-1. Start MongoDB locally, or configure a MongoDB URI in `server/.env`.
-2. Install dependencies:
-   - `npm install`
-   - `npm install --prefix server`
-   - `npm install --prefix client`
-3. Start the app:
-   - `npm run dev`
-4. Open the frontend in the browser at `http://localhost:5173`.
+## ✨ Features
 
-## Environment
+### 🏋️ Workout Planner
+- Generate workout plans based on user preferences and fitness goals.
+- Explore structured workout routines.
+- Follow a weekly workout schedule.
+- Save workouts and track self-reported completion.
 
-Create a `server/.env` file using the example in `server/.env.example`.
-For deployment, set `SESSION_SECRET` to a securely generated random value of at least 32 characters. In development, the server generates a temporary random secret when this value is omitted; existing sessions will expire when the server restarts.
+### 🎯 Exercise Form Check
+- Uses camera-based pose tracking powered by MediaPipe Pose Landmarker.
+- Estimates visible knee angles during squats.
+- Counts repetitions by detecting movement from standing to a squat and back.
+- Helps users observe basic movement patterns during exercise.
 
-## Deploy for a team review
+*Note: Form Check is a basic demonstration tool, not a complete assessment of exercise technique or a substitute for professional guidance.*
 
-The repository includes a Render Blueprint in `render.yaml`. To publish the app:
+### 🥗 Food Nutrition
+- Explore nutrition information for supported food items.
+- View approximate calories, protein, carbohydrates, and fats.
+- Make more informed food choices based on serving sizes.
 
-1. Push the project to a GitHub repository you control.
-2. Create a MongoDB Atlas cluster and database user. In Atlas Network Access, allow connections from Render (for a student demo, Atlas may require `0.0.0.0/0`; use a strong database password and never put the URI in source code).
-3. In Render, choose **New + → Blueprint**, connect the repository, and apply `render.yaml`.
-4. When prompted for `MONGODB_URI`, enter the Atlas connection string, including the database name `fitmentor-ai`.
-5. Wait for the Render deploy to finish, then open its `onrender.com` URL and register a user. Share that HTTPS URL with your team leader.
+### 💰 Budget Diet Planner
+- Generate diet suggestions based on a user's budget and preferences.
+- Support practical meal planning with affordability in mind.
+- Help users explore suitable food choices for their fitness goals.
 
-Render builds the React app and serves it from the Express server, so the frontend and API use the same HTTPS origin. Render generates a session secret automatically. Do not publish `server/.env`, database credentials, or account passwords.
+### 🍛 Mess Assistant
+- Get food suggestions suited to common mess and everyday meal options.
+- Explore practical alternatives using the available food catalog.
+- Make meal decisions more conveniently.
 
-The Blueprint uses Render's free web-service plan for a no-cost demo. Free services spin down after inactivity, so the first request after a quiet period can take about a minute; their local filesystem is temporary. Keep user and session data in MongoDB Atlas, not on the Render filesystem. Render's free plan has usage limits and is intended for demos rather than production workloads.
+### 📅 Weekly Workout Schedule
+- View saved workouts in a weekly calendar.
+- Schedule in-app reminders.
+- Record workout check-ins and completion.
 
-### Create the initial admin account
+### 📈 Fitness Progress Tracking
+- Save weight entries and view weight trends.
+- Track completed workout targets.
+- Store relevant fitness activity and preferences.
+- Review progress over time.
 
-Admin accounts are never created automatically, and registration always creates a regular user. With MongoDB running, create the first administrator using the interactive command:
+### 👤 User Accounts
+- Register and log in securely.
+- Maintain individual user accounts and sessions.
+- Store supported user data in MongoDB for future access.
 
-```powershell
-npm run create-admin --prefix server
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| React | Interactive user interface |
+| Vite | Frontend development and build tool |
+| React Router | Client-side navigation |
+| Node.js | JavaScript runtime |
+| Express.js | Backend server and REST APIs |
+| MongoDB | Persistent data storage |
+| Mongoose | MongoDB data modeling |
+| EJS | Server-rendered views |
+| MediaPipe Pose Landmarker | Basic camera-based pose tracking |
+| Render | Application deployment |
+| MongoDB Atlas | Cloud database hosting |
+
+---
+
+## 🏗️ Project Structure
+
+```text
+FitMentor-AI/
+├── client/
+│   └── src/
+│       └── pages/
+│           └── WeeklySchedulePage.jsx
+├── server/
+│   ├── models/
+│   ├── routes/
+│   ├── utils/
+│   ├── views/
+│   └── .env.example
+├── render.yaml
+├── package.json
+└── README.md
 ```
 
-The command prompts for a name, email, and a password (the password is hidden while typing and must be at least 12 characters). It stores only a bcrypt hash, refuses to overwrite an existing account or initialize a second time, and can be run only against a database that does not already contain an admin. Run this command from the project root. For a deployed database, configure `MONGODB_URI` in `server/.env` to point to that database and run the command from a trusted machine before making the deployment available; do not add admin credentials to source control or public environment files.
+- `client/` — React frontend and application pages.
+- `server/` — Express backend, APIs, and server-rendered views.
+- `server/models/` — Mongoose models for database collections.
+- `server/routes/` — Authentication and application API routes.
+- `server/utils/` — Workout generation logic and shared food catalog.
+- `server/views/` — EJS templates.
+- `render.yaml` — Render deployment configuration.
 
-Sign in to the normal Login page with the admin email and password to open the Admin Dashboard. Admin API requests independently verify the account's current role in MongoDB. Once the initial admin exists, use **Admin → Users** to grant or remove admin roles; the last administrator cannot be demoted.
+---
 
-## Persistence and camera
+## 🚀 Getting Started
 
-Users, generated workouts, saved meals, weight entries, and login sessions are stored in MongoDB. If MongoDB is unavailable, local API requests return an explicit error instead of pretending that data was saved; a production deployment will not start without its configured database.
+### Prerequisites
 
-The app also includes a saved weekly workout calendar and in-app reminders (visible only while the app is open), profile-based workout/nutrition preferences, suggested workout substitutions, meal favorites, weight trend chart, completed-target history, and per-member usage counts for administrators. Allergen catalog tags are approximate item-name matches, not a guarantee about recipes or cross-contamination; users must check product labels and preparation methods.
+Make sure you have installed:
 
-The Form Check page uses MediaPipe Pose Landmarker to estimate a squat's visible knee angle and count a rep after a descent and return to standing. Allow camera access, use `localhost` or HTTPS, and keep the full body in frame. The pose model and WebAssembly files are downloaded from their public CDN on first use. This is a basic rep-counting aid, not a medical or full-form assessment.
+- Node.js and npm
+- MongoDB locally or a MongoDB Atlas database
+- Git
 
-Food nutrition values and meal costs are approximate per the serving size shown. They are for demonstration and general guidance, not clinical nutrition advice.
+### 1. Clone the repository
 
-## Notes
+```bash
+git clone https://github.com/kalpana6497-cmd/fitmentor-ai.git
+cd fitmentor-ai
+```
 
-This project intentionally keeps the implementation straightforward and beginner-friendly so it is easy to explain in class presentations and lab viva.
+### 2. Install dependencies
+
+```bash
+npm install
+npm install --prefix server
+npm install --prefix client
+```
+
+### 3. Configure environment variables
+
+Create a `.env` file inside the `server/` directory using `server/.env.example` as a reference.
+
+Configure the required variables, including your MongoDB connection string and a secure session secret.
+
+Example:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+SESSION_SECRET=your_secure_random_secret
+```
+
+Use your own credentials. Never upload `.env` files, database passwords, or secret keys to GitHub.
+
+### 4. Run the application
+
+From the project root, run:
+
+```bash
+npm run dev
+```
+
+Open the local frontend at:
+
+http://localhost:5173
+
+*Make sure MongoDB is available and the required environment variables are configured before starting the application.*
+
+---
+
+## 🌐 Live Deployment
+
+FitMentor AI is deployed using Render, with MongoDB Atlas intended for persistent cloud data storage.
+
+**Access the application:** [https://fitmentor-ai-xbmr.onrender.com/login](https://fitmentor-ai-xbmr.onrender.com/login)
+
+Users can open the deployed link without running the project on their own computers. Render's free services may take some time to respond after a period of inactivity.
+
+---
+
+## 🔐 Security and Privacy
+
+- Passwords should be stored using secure password hashing.
+- Authentication and authorization must be handled on the server.
+- Database credentials and session secrets must remain private.
+- User information should be accessed only through the application's authorized routes.
+
+---
+
+## 🎯 Project Objective
+
+The objective of FitMentor AI is to bring workout planning, basic exercise assistance, nutrition guidance, affordable diet suggestions, and progress tracking together in a single web application.
+
+The project demonstrates how frontend development, backend APIs, database management, and camera-based pose estimation can work together to create a practical fitness application.
+
+---
+
+## 🔮 Future Enhancements
+
+- More exercise types and improved pose-based feedback.
+- More personalized workout and nutrition recommendations.
+- Expanded food recognition and nutrition data.
+- Enhanced progress reports and fitness analytics.
+- Improved mobile responsiveness and user experience.
+
+---
+
+## 👩‍💻 Developed As
+
+A student full-stack development project focused on fitness, nutrition, and personal wellness using modern web technologies.
+
+**FitMentor AI — Your trainer. Your nutritionist. Your gym buddy.**
