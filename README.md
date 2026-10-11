@@ -4,7 +4,7 @@
 
 The platform combines personalized workout planning, exercise assistance, nutrition guidance, budget-friendly diet planning, and progress tracking to make fitness more accessible and convenient.
 
-🌐 **Live Website:** [FitMentor AI](https://fitmentor-ai-xbmr.onrender.com/login)
+🌐 **Live Website:** [FitMentor AI](https://fitmentor-ai-xbmr.onrender.com)
 
 ---
 
