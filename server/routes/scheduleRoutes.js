@@ -1,6 +1,7 @@
 const express = require('express');
 const Workout = require('../models/Workout');
 const WorkoutSchedule = require('../models/WorkoutSchedule');
+const { isValidDate } = require('../utils/dateValidation');
 const { requireAuth } = require('./authRoutes');
 
 const router = express.Router();
@@ -56,7 +57,7 @@ router.put('/', requireAuth, async (req, res, next) => {
 router.post('/complete', requireAuth, async (req, res, next) => {
   try {
     const date = req.body.date;
-    if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    if (!isValidDate(date)) {
       return res.status(400).json({ message: 'Provide a valid completion date.' });
     }
     const schedule = await WorkoutSchedule.findOneAndUpdate(

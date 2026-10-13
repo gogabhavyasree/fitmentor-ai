@@ -43,27 +43,75 @@ const templates = {
   },
 };
 
-const getExercises = ({ goal, level, availableTime }) => {
+const equipmentAlternatives = {
+  'Goblet Squats': {
+    Bodyweight: { name: 'Bodyweight Squats', instructions: 'Sit back into a comfortable squat and stand tall with control.' },
+    'Yoga mat': { name: 'Bodyweight Squats', instructions: 'Sit back into a comfortable squat and stand tall with control.' },
+  },
+  'Bent-Over Rows': {
+    Bodyweight: { name: 'Prone Y-T-W Raises', instructions: 'Lie face down and raise your arms into Y, T, and W positions with control.' },
+    'Yoga mat': { name: 'Prone Y-T-W Raises', instructions: 'Lie face down and raise your arms into Y, T, and W positions with control.' },
+  },
+  'Dumbbell Press': {
+    Bodyweight: { name: 'Incline Push-Ups', instructions: 'Place your hands on a stable raised surface and perform controlled push-ups.' },
+    'Yoga mat': { name: 'Incline Push-Ups', instructions: 'Place your hands on a stable raised surface and perform controlled push-ups.' },
+  },
+  'Pull-Ups': {
+    Bodyweight: { name: 'Prone Y-T-W Raises', instructions: 'Lie face down and raise your arms into Y, T, and W positions with control.' },
+    'Yoga mat': { name: 'Prone Y-T-W Raises', instructions: 'Lie face down and raise your arms into Y, T, and W positions with control.' },
+    Dumbbells: { name: 'Bent-Over Rows', instructions: 'Hinge at your hips and pull your dumbbells toward your lower ribs.' },
+  },
+  Deadlift: {
+    Bodyweight: { name: 'Hip Hinge Drill', instructions: 'Practice hinging your hips back with a neutral spine, then stand tall.' },
+    'Yoga mat': { name: 'Hip Hinge Drill', instructions: 'Practice hinging your hips back with a neutral spine, then stand tall.' },
+  },
+  'Bench Press': {
+    Bodyweight: { name: 'Knee Push-Ups', instructions: 'Keep knees grounded and body aligned while lowering and pressing up.' },
+    'Yoga mat': { name: 'Knee Push-Ups', instructions: 'Keep knees grounded and body aligned while lowering and pressing up.' },
+  },
+  'Overhead Press': {
+    Bodyweight: { name: 'Pike Push-Ups', instructions: 'From a comfortable pike position, bend your elbows and press back up with control.' },
+    'Yoga mat': { name: 'Pike Push-Ups', instructions: 'From a comfortable pike position, bend your elbows and press back up with control.' },
+  },
+  'Kettlebell Swings': {
+    Bodyweight: { name: 'Glute Bridges', instructions: 'Lie on your back and lift your hips by squeezing your glutes.' },
+    'Yoga mat': { name: 'Glute Bridges', instructions: 'Lie on your back and lift your hips by squeezing your glutes.' },
+    Dumbbells: { name: 'Dumbbell Romanian Deadlifts', instructions: 'Hinge at your hips while lowering dumbbells close to your legs, then stand tall.' },
+  },
+};
+
+const getExercises = ({ goal, level, availableTime, equipment }) => {
   const baseList = templates[goal]?.[level] || templates['General Fitness'].Beginner;
   const durationFactor = Number(availableTime) || 20;
-  const safeList = [...baseList];
+  let selected = [...baseList];
 
   if (durationFactor <= 20) {
-    return safeList.slice(0, 3);
+    selected = selected.slice(0, 3);
+  } else if (durationFactor <= 35) {
+    selected = selected.slice(0, 4);
   }
 
-  if (durationFactor <= 35) {
-    return safeList.slice(0, 4);
-  }
-
-  return safeList;
+  const extraSets = durationFactor <= 35 ? 0 : durationFactor <= 60 ? 1 : 2;
+  return selected.map((exercise) => {
+    const alternative = equipmentAlternatives[exercise.name]?.[equipment];
+    return {
+      ...exercise,
+      ...(alternative || {}),
+      sets: Math.min(Number(exercise.sets || 1) + extraSets, 5),
+    };
+  });
 };
 
 const generateWorkoutPlan = ({ goal, level, availableTime, equipment }) => {
   const selectedGoal = goal || 'General Fitness';
   const selectedLevel = level || 'Beginner';
   const duration = availableTime || 20;
-  const plan = getExercises({ goal: selectedGoal, level: selectedLevel, availableTime: duration });
+  const plan = getExercises({
+    goal: selectedGoal,
+    level: selectedLevel,
+    availableTime: duration,
+    equipment,
+  });
 
   return {
     goal: selectedGoal,

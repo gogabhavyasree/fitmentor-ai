@@ -14,6 +14,7 @@ const progressRoutes = require('./routes/progressRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const userRoutes = require('./routes/userRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
+const dailyCoachRoutes = require('./routes/dailyCoachRoutes');
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
@@ -93,6 +94,7 @@ const startServer = async () => {
   app.use('/api/admin', adminRoutes);
   app.use('/api/user', userRoutes);
   app.use('/api/schedule', scheduleRoutes);
+  app.use('/api/coach', dailyCoachRoutes);
 
   app.get('/', (req, res) => {
     if (process.env.NODE_ENV === 'production') {

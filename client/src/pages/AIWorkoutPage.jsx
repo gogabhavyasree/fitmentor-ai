@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getExerciseRule } from '../utils/formTracking';
 
 function AIWorkoutPage({ user }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const coachTime = location.state?.coachTime;
   const [form, setForm] = useState({
     goal: user?.goal || 'Weight Loss',
     level: user?.fitnessLevel || 'Beginner',
-    availableTime: String(user?.availableTime || 20),
+    availableTime: String(coachTime || user?.availableTime || 20),
     equipment: user?.equipment || 'Bodyweight',
   });
   const [plan, setPlan] = useState(null);
@@ -32,12 +34,14 @@ function AIWorkoutPage({ user }) {
         if (data.plan) {
           setPlan(data.plan);
           setForm({
-            goal: data.plan.goal,
-            level: data.plan.level,
-            availableTime: String(data.plan.duration),
-            equipment: data.plan.equipment,
+            goal: coachTime ? user?.goal || data.plan.goal : data.plan.goal,
+            level: coachTime ? user?.fitnessLevel || data.plan.level : data.plan.level,
+            availableTime: String(coachTime || data.plan.duration),
+            equipment: coachTime ? user?.equipment || data.plan.equipment : data.plan.equipment,
           });
-          setStatus('Your latest saved workout is ready.');
+          setStatus(coachTime
+            ? `Today’s check-in suggested a ${coachTime}-minute session. Generate it when you’re ready.`
+            : 'Your latest saved workout is ready.');
         }
       } catch (error) {
         setStatus(error.message);
@@ -47,7 +51,7 @@ function AIWorkoutPage({ user }) {
     };
 
     loadSavedPlan();
-  }, []);
+  }, [coachTime, user]);
 
   useEffect(() => {
     if (!plan) return undefined;

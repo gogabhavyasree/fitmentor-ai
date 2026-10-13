@@ -43,7 +43,10 @@ router.post('/register', async (req, res, next) => {
     const ageNumber = Number(age);
     const validGoals = ['Weight Loss', 'Muscle Gain', 'General Fitness'];
 
-    if (!name?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailKey) || typeof password !== 'string' || password.length < 8) {
+    if (typeof name !== 'string' || !name.trim()
+      || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailKey)
+      || typeof password !== 'string'
+      || password.length < 8) {
       return res.status(400).json({ message: 'Enter a name, valid email, and password with at least 8 characters.' });
     }
     if (!Number.isInteger(ageNumber) || ageNumber < 13 || ageNumber > 120 || (goal && !validGoals.includes(goal))) {

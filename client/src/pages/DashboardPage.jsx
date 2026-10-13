@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function DashboardPage() {
   const [dashboard, setDashboard] = useState(null);
@@ -44,6 +45,15 @@ function DashboardPage() {
           <div className="art-ring art-ring-two" />
           <span>✦</span>
         </div>
+      </section>
+
+      <section className="daily-coach-prompt">
+        <div>
+          <span className="section-eyebrow">MAKE TODAY WORK FOR YOU</span>
+          <h2>How are you feeling today?</h2>
+          <p>Check in on sleep, stress, recovery, and time. Get a plan that adapts to your day.</p>
+        </div>
+        <Link className="primary-button" to="/daily-coach">Get today’s guidance</Link>
       </section>
 
       <div className="metric-grid">

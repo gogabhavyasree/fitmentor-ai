@@ -1,5 +1,5 @@
-import { BrowserRouter, Link, Navigate, NavLink, Route, Routes } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { BrowserRouter, Link, Navigate, NavLink, Route, Routes, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
 import DashboardPage from './pages/DashboardPage';
 import AIWorkoutPage from './pages/AIWorkoutPage';
 import FormCheckPage from './pages/FormCheckPage';
@@ -13,9 +13,11 @@ import RegisterPage from './pages/RegisterPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminUsersPage from './pages/AdminUsersPage';
 import WeeklySchedulePage from './pages/WeeklySchedulePage';
+import DailyCoachPage from './pages/DailyCoachPage';
 
 const navigation = [
   { label: 'Dashboard', path: '/' },
+  { label: 'Daily Coach', path: '/daily-coach' },
   { label: 'AI Workout', path: '/ai-workout' },
   { label: 'Weekly Calendar', path: '/schedule' },
   { label: 'Form Check', path: '/form-check' },
@@ -145,55 +147,113 @@ function InAppReminder() {
   );
 }
 
-const AppShell = ({ user, onLogout, children }) => (
-  <div className="app-shell">
-    <aside className="sidebar">
-      <div className="brand-box">
-        <span className="brand-mark">F</span>
-        <div>
-          <h2>FitMentor <span>AI</span></h2>
-          <p>YOUR EVERYDAY FITNESS GUIDE</p>
+const AppShell = ({ user, onLogout, children }) => {
+  const navigate = useNavigate();
+  const profileMenuRef = useRef(null);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [logoutError, setLogoutError] = useState('');
+
+  useEffect(() => {
+    if (!profileMenuOpen) return undefined;
+    const closeOnOutsideClick = (event) => {
+      if (!profileMenuRef.current?.contains(event.target)) setProfileMenuOpen(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setProfileMenuOpen(false);
+    };
+    document.addEventListener('pointerdown', closeOnOutsideClick);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsideClick);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [profileMenuOpen]);
+
+  const handleProfileLogout = async () => {
+    setLogoutError('');
+    try {
+      await onLogout();
+      setProfileMenuOpen(false);
+      navigate('/login', { replace: true });
+    } catch (error) {
+      setLogoutError(error.message || 'Unable to log out. Please try again.');
+    }
+  };
+
+  return (
+    <div className="app-shell">
+      <aside className="sidebar">
+        <div className="brand-box">
+          <span className="brand-mark">F</span>
+          <div>
+            <h2>FitMentor <span>AI</span></h2>
+            <p>YOUR EVERYDAY FITNESS GUIDE</p>
+          </div>
         </div>
-      </div>
-      <p className="nav-caption">WORKSPACE</p>
-      <nav className="nav-menu">
-        {navigation.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
-            end={item.path === '/'}
+        <p className="nav-caption">WORKSPACE</p>
+        <nav className="nav-menu">
+          {navigation.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+              end={item.path === '/'}
+            >
+              {item.label}
+            </NavLink>
+          ))}
+          {user?.role === 'admin' && <NavLink to="/admin" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>Admin</NavLink>}
+        </nav>
+        <div className="user-box" ref={profileMenuRef}>
+          <span className="avatar">{(user?.name || 'G').slice(0, 1).toUpperCase()}</span>
+          <div className="user-details">
+            <strong>{user?.name || 'Guest'}</strong>
+            <span>{user?.goal || 'General Fitness'}</span>
+          </div>
+          <button
+            className="logout-button"
+            type="button"
+            onClick={() => {
+              setLogoutError('');
+              setProfileMenuOpen((open) => !open);
+            }}
+            aria-label="Open profile menu"
+            aria-haspopup="menu"
+            aria-expanded={profileMenuOpen}
+            title="Profile menu"
           >
-            {item.label}
-          </NavLink>
-        ))}
-        {user?.role === 'admin' && <NavLink to="/admin" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>Admin</NavLink>}
-      </nav>
-      <div className="user-box">
-        <span className="avatar">{(user?.name || 'G').slice(0, 1).toUpperCase()}</span>
-        <div className="user-details">
-          <strong>{user?.name || 'Guest'}</strong>
-          <span>{user?.goal || 'General Fitness'}</span>
+            ↗
+          </button>
+          {profileMenuOpen && (
+            <div className="profile-menu" role="menu">
+              <button className="profile-menu-logout" type="button" role="menuitem" onClick={handleProfileLogout}>
+                <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
+                  <path d="M8 3H4.5A1.5 1.5 0 0 0 3 4.5v11A1.5 1.5 0 0 0 4.5 17H8M12.5 6.5l4 3.5-4 3.5M7 10h9.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span>Logout</span>
+              </button>
+              {logoutError && <p className="profile-menu-error" role="alert">{logoutError}</p>}
+            </div>
+          )}
         </div>
-        <button className="logout-button" onClick={onLogout} aria-label="Logout" title="Logout">↗</button>
-      </div>
-    </aside>
-    <main className="main-panel">
-      <header className="topbar">
-        <div>
-          <span className="topbar-kicker">YOUR HEALTH, YOUR PACE</span>
-          <span className="topbar-subtitle">A little better every day.</span>
-        </div>
-        <div className="topbar-date">
-          <span className="status-dot" />
-          Fitness workspace
-        </div>
-      </header>
-      <InAppReminder />
-      <div className="page-content">{children}</div>
-    </main>
-  </div>
-);
+      </aside>
+      <main className="main-panel">
+        <header className="topbar">
+          <div>
+            <span className="topbar-kicker">YOUR HEALTH, YOUR PACE</span>
+            <span className="topbar-subtitle">A little better every day.</span>
+          </div>
+          <div className="topbar-date">
+            <span className="status-dot" />
+            Fitness workspace
+          </div>
+        </header>
+        <InAppReminder />
+        <div className="page-content">{children}</div>
+      </main>
+    </div>
+  );
+};
 
 function App() {
   const [user, setUser] = useState(null);
@@ -218,10 +278,11 @@ function App() {
   };
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', {
+    const response = await fetch('/api/auth/logout', {
       method: 'POST',
       credentials: 'include',
     });
+    if (!response.ok) throw new Error('Unable to log out. Please try again.');
     setUser(null);
   };
 
@@ -247,6 +308,14 @@ function App() {
           <ProtectedRoute user={user}>
             <AppShell user={user} onLogout={handleLogout}>
               <AIWorkoutPage user={user} />
+            </AppShell>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/daily-coach" element={
+          <ProtectedRoute user={user}>
+            <AppShell user={user} onLogout={handleLogout}>
+              <DailyCoachPage user={user} />
             </AppShell>
           </ProtectedRoute>
         } />
@@ -278,7 +347,7 @@ function App() {
         <Route path="/budget-diet" element={
           <ProtectedRoute user={user}>
             <AppShell user={user} onLogout={handleLogout}>
-              <BudgetDietPage />
+              <BudgetDietPage user={user} />
             </AppShell>
           </ProtectedRoute>
         } />

@@ -1,5 +1,6 @@
 const express = require('express');
 const Progress = require('../models/Progress');
+const { isValidDate } = require('../utils/dateValidation');
 const { requireAuth } = require('./authRoutes');
 
 const router = express.Router();
@@ -17,7 +18,7 @@ router.post('/save', requireAuth, async (req, res, next) => {
   try {
     const weight = Number(req.body.weight);
     const date = req.body.date || new Date().toISOString().slice(0, 10);
-    if (!Number.isFinite(weight) || weight < 1 || weight > 500 || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    if (!Number.isFinite(weight) || weight < 1 || weight > 500 || !isValidDate(date)) {
       return res.status(400).json({ message: 'Enter a valid weight and date.' });
     }
 

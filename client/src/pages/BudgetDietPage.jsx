@@ -8,7 +8,7 @@ const DEFAULT_FORM = {
   availability: 'hostel',
 };
 
-function BudgetDietPage() {
+function BudgetDietPage({ user }) {
   const [form, setForm] = useState(DEFAULT_FORM);
   const [foods, setFoods] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,10 @@ function BudgetDietPage() {
     loadFoods();
   }, []);
 
-  const plan = useMemo(() => getBudgetPlan({ ...form, foods }), [form, foods]);
+  const plan = useMemo(
+    () => getBudgetPlan({ ...form, foods, allergens: user?.allergens || [] }),
+    [form, foods, user?.allergens]
+  );
   const handleChange = (event) => {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
   };
@@ -112,6 +115,11 @@ function BudgetDietPage() {
             </div>
           </div>
           <p className="muted budget-advice">{plan.budgetTip} {plan.goalTip}</p>
+          {!!plan.omittedItems && (
+            <p className="estimate-note" role="status">
+              {plan.omittedItems} planned food item{plan.omittedItems === 1 ? ' was' : 's were'} omitted because no catalog alternative was tagged as suitable for your profile allergens. Catalog tags are approximate; verify ingredients and cross-contamination.
+            </p>
+          )}
 
           <div className="page-card" style={{ marginTop: '1rem' }}>
             <div className="section-title-row">

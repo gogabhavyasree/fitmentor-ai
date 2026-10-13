@@ -176,6 +176,7 @@ a {
 }
 
 .user-box {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.65rem;
@@ -234,6 +235,58 @@ a {
 .logout-button:hover {
   border-color: rgba(255, 133, 133, 0.3);
   color: #ff9999;
+}
+
+.profile-menu {
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  bottom: calc(100% + 0.65rem);
+  width: 178px;
+  padding: 0.35rem;
+  border: 1px solid rgba(181, 220, 217, 0.16);
+  border-radius: 12px;
+  background: #142630;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.36);
+}
+
+.profile-menu-logout {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  min-height: 40px;
+  padding: 0.55rem 0.65rem;
+  border: 0;
+  border-radius: 8px;
+  color: #e8f2f3;
+  background: transparent;
+  text-align: left;
+  font-size: 0.84rem;
+}
+
+.profile-menu-logout svg {
+  width: 17px;
+  height: 17px;
+  color: var(--mint);
+}
+
+.profile-menu-logout:hover,
+.profile-menu-logout:focus-visible {
+  color: #ffb1ad;
+  background: rgba(255, 133, 133, 0.09);
+  outline: none;
+}
+
+.profile-menu-logout:hover svg,
+.profile-menu-logout:focus-visible svg {
+  color: #ff9999;
+}
+
+.profile-menu-error {
+  margin: 0.35rem 0.55rem 0.5rem;
+  color: #ffb1ad;
+  font-size: 0.74rem;
 }
 
 .main-panel {
@@ -1762,6 +1815,158 @@ a {
   opacity: 0.65;
 }
 
+.daily-coach-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin: 1.3rem 0;
+  padding: 1.35rem 1.5rem;
+  border: 1px solid rgba(116, 224, 189, 0.18);
+  border-radius: 16px;
+  background: linear-gradient(110deg, rgba(45, 119, 100, 0.2), rgba(16, 31, 41, 0.94));
+}
+
+.daily-coach-prompt h2 {
+  margin: 0.3rem 0;
+  color: #f3fbf9;
+  font-family: Manrope, sans-serif;
+  font-size: 1.25rem;
+}
+
+.daily-coach-prompt p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.daily-coach-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 1.2rem;
+}
+
+.daily-coach-form h3,
+.daily-coach-result h3 {
+  margin-top: 0.45rem;
+}
+
+.coach-pain-option {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0.5rem 0 1rem;
+  color: #e8f2f3;
+  font-size: 0.88rem;
+}
+
+.coach-pain-option input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--mint);
+}
+
+.recovery-score {
+  margin: 1rem 0 1.3rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.recovery-score > div:first-child {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.recovery-score > div:first-child span,
+.coach-workout-action .measurement-label {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.recovery-score > div:first-child strong {
+  color: var(--mint-bright);
+  font-family: Manrope, sans-serif;
+  font-size: 1.6rem;
+}
+
+.recovery-score > div:first-child small {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.recovery-meter {
+  height: 8px;
+  margin-top: 0.75rem;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.recovery-meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--mint);
+  transition: width 180ms ease;
+}
+
+.recovery-recovery .recovery-meter span {
+  background: #e6ab72;
+}
+
+.coach-guidance {
+  color: #c2d1d1;
+  line-height: 1.7;
+}
+
+.coach-workout-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.coach-workout-action > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.coach-workout-action > div strong {
+  color: #f3fbf9;
+}
+
+.coach-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: 1.2rem 0;
+  font-size: 0.84rem;
+}
+
+.daily-coach-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.daily-coach-empty strong {
+  color: #e8f2f3;
+}
+
+.daily-coach-footer {
+  margin-top: 1rem;
+}
+
 @media (max-width: 900px) {
   .app-shell {
     flex-direction: column;
@@ -1822,6 +2027,12 @@ a {
     border: 0;
   }
 
+  .profile-menu {
+    top: calc(100% + 0.65rem);
+    right: 0;
+    bottom: auto;
+  }
+
   .user-details,
   .topbar-subtitle,
   .topbar-date {
@@ -1859,6 +2070,10 @@ a {
   .meal-builder,
   .camera-results {
     position: static;
+  }
+
+  .daily-coach-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1918,6 +2133,12 @@ a {
   }
 
   .camera-controls {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .daily-coach-prompt,
+  .coach-workout-action {
     align-items: flex-start;
     flex-direction: column;
   }

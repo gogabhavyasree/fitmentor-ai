@@ -14,39 +14,62 @@ export const getBudgetPlan = ({
   goal = 'Weight Loss',
   availability = 'hostel',
   foods = [],
+  allergens = [],
 }) => {
   const foodByName = new Map(foods.map((food) => [food.name, food]));
   const isVegetarian = preference === 'vegetarian';
   const lowBudget = Number(budget) < 120;
-  const available = (name) => foodByName.get(name);
+  const excludedAllergens = new Set(allergens);
+  let omittedItems = 0;
+  const available = (...names) => {
+    const food = names
+      .map((name) => foodByName.get(name))
+      .find((item) => item && !(item.allergens || []).some((allergen) => excludedAllergens.has(allergen)));
+    if (!food) omittedItems += 1;
+    return food;
+  };
 
   const meals = [
     {
       name: 'Breakfast',
       items: availability === 'home'
-        ? [available(isVegetarian ? (lowBudget ? 'Poha' : 'Oats') : 'Eggs'), ...(isVegetarian ? [] : [available('Whole Wheat Bread')])]
-        : [available(isVegetarian ? (lowBudget ? 'Idli' : 'Upma') : 'Eggs'), ...(isVegetarian || lowBudget ? [] : [available('Whole Wheat Bread')])],
+        ? [
+          available(...(isVegetarian
+            ? (lowBudget ? ['Poha', 'Idli', 'Oats', 'Banana'] : ['Oats', 'Poha', 'Idli', 'Banana'])
+            : ['Eggs', 'Paneer', 'Tofu', 'Soya Chunks', 'Roasted Chana'])),
+          ...(isVegetarian ? [] : [available('Whole Wheat Bread', 'Chapati', 'Brown Rice')]),
+        ]
+        : [
+          available(...(isVegetarian
+            ? (lowBudget ? ['Idli', 'Poha', 'Oats', 'Banana'] : ['Upma', 'Idli', 'Poha', 'Banana'])
+            : ['Eggs', 'Paneer', 'Tofu', 'Soya Chunks', 'Roasted Chana'])),
+          ...(isVegetarian || lowBudget ? [] : [available('Whole Wheat Bread', 'Chapati', 'Brown Rice')]),
+        ],
     },
     {
       name: 'Lunch',
       items: [
-        available('White Rice'),
-        available(availability === 'hostel' ? 'Sambar' : 'Dal'),
-        available('Mixed Vegetable Curry'),
-        ...(!isVegetarian && !lowBudget ? [available('Chicken Breast')] : []),
+        available('White Rice', 'Brown Rice', 'Quinoa'),
+        available(...(availability === 'hostel' ? ['Sambar', 'Dal', 'Rajma', 'Chana Masala'] : ['Dal', 'Rajma', 'Chana Masala', 'Sambar'])),
+        available('Mixed Vegetable Curry', 'Spinach', 'Mixed Salad'),
+        ...(!isVegetarian && !lowBudget ? [available('Chicken Breast', 'Fish', 'Eggs')] : []),
       ],
     },
     {
       name: 'Snack',
-      items: [available('Banana'), available(lowBudget ? 'Peanuts' : 'Roasted Chana')],
+      items: [available('Banana', 'Apple', 'Orange'), available(...(lowBudget
+        ? ['Peanuts', 'Roasted Chana', 'Makhana']
+        : ['Roasted Chana', 'Peanuts', 'Makhana']))],
     },
     {
       name: 'Dinner',
       items: [
-        available('Chapati'),
-        available('Dal'),
-        available('Mixed Vegetable Curry'),
-        ...(isVegetarian ? [] : [available(lowBudget ? 'Eggs' : 'Chicken Breast')]),
+        available('Chapati', 'Brown Rice', 'White Rice'),
+        available('Dal', 'Rajma', 'Chana Masala', 'Sambar'),
+        available('Mixed Vegetable Curry', 'Spinach', 'Mixed Salad'),
+        ...(isVegetarian ? [] : [available(...(lowBudget
+          ? ['Eggs', 'Chicken Breast', 'Fish']
+          : ['Chicken Breast', 'Eggs', 'Fish']))]),
       ],
     },
   ].map((meal) => ({ ...meal, items: meal.items.filter(Boolean) }));
@@ -62,9 +85,19 @@ export const getBudgetPlan = ({
   const budgetTip = estimatedCost > Number(budget)
     ? 'This sample plan is above the entered budget. Use the lower-cost alternatives listed below or adjust serving choices.'
     : 'This sample estimate is within the daily budget you entered.';
-  const alternatives = isVegetarian
-    ? ['Choose dal, soya chunks, or roasted chana for affordable vegetarian protein.', 'Use seasonal fruit and vegetables to reduce cost.']
-    : ['Eggs are often a lower-cost protein alternative to chicken.', 'Choose seasonal fruit and vegetables to reduce cost.'];
+  const proteinAlternatives = (isVegetarian
+    ? ['Dal', 'Soya Chunks', 'Roasted Chana', 'Paneer', 'Tofu']
+    : ['Eggs', 'Chicken Breast', 'Fish', 'Dal', 'Roasted Chana'])
+    .map((name) => foodByName.get(name))
+    .filter((food) => food && !(food.allergens || []).some((allergen) => excludedAllergens.has(allergen)))
+    .slice(0, 3)
+    .map((food) => food.name);
+  const alternatives = [
+    proteinAlternatives.length
+      ? `Lower-cost protein options in this catalog: ${proteinAlternatives.join(', ')}.`
+      : 'No catalog protein option is clearly tagged as suitable for your selected allergens. Check ingredients and labels before choosing foods.',
+    'Use seasonal fruit and vegetables to reduce cost.',
+  ];
 
   return {
     budget: Number(budget),
@@ -74,6 +107,7 @@ export const getBudgetPlan = ({
     meals,
     nutrition,
     estimatedCost,
+    omittedItems,
     goalTip,
     budgetTip,
     alternatives,
