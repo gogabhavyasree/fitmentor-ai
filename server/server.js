@@ -96,21 +96,6 @@ const startServer = async () => {
   app.use('/api/schedule', scheduleRoutes);
   app.use('/api/coach', dailyCoachRoutes);
 
-  app.get('/', (req, res) => {
-    if (process.env.NODE_ENV === 'production') {
-      return res.sendFile(path.join(__dirname, '..', 'client', 'dist', 'index.html'));
-    }
-    res.render('home', { title: 'FitMentor AI', user: req.session.user || null });
-  });
-  app.get('/login', (req, res) => {
-    res.render('login', { title: 'Login', user: req.session.user || null });
-  });
-  app.get('/register', (req, res) => {
-    res.render('register', { title: 'Register', user: req.session.user || null });
-  });
-  app.get('/dashboard', (req, res) => {
-    res.render('dashboard', { title: 'Dashboard', user: req.session.user || null });
-  });
   app.get('/api/health', (req, res) => {
     res.json({
       status: 'ok',
@@ -118,12 +103,26 @@ const startServer = async () => {
       connectedToMongo: mongoConnected && mongoose.connection.readyState === 1,
     });
   });
+
   if (process.env.NODE_ENV === 'production') {
     const clientBuild = path.join(__dirname, '..', 'client', 'dist');
     app.use(express.static(clientBuild));
     app.get('*', (req, res, next) => {
       if (req.path.startsWith('/api/')) return next();
       res.sendFile(path.join(clientBuild, 'index.html'));
+    });
+  } else {
+    app.get('/', (req, res) => {
+      res.render('home', { title: 'FitMentor AI', user: req.session.user || null });
+    });
+    app.get('/login', (req, res) => {
+      res.render('login', { title: 'Login', user: req.session.user || null });
+    });
+    app.get('/register', (req, res) => {
+      res.render('register', { title: 'Register', user: req.session.user || null });
+    });
+    app.get('/dashboard', (req, res) => {
+      res.render('dashboard', { title: 'Dashboard', user: req.session.user || null });
     });
   }
   app.use((error, req, res, next) => {

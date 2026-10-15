@@ -16,6 +16,47 @@ router.get('/search', requireAuth, (req, res) => {
   res.json({ results: searchFood(typeof req.query.q === 'string' ? req.query.q : '') });
 });
 
+router.get('/protein-rankings', requireAuth, (req, res) => {
+  const hostelFriendlySet = new Set([
+    'Milk', 'Curd', 'Greek Yogurt', 'Buttermilk', 'Peanuts', 'Peanut Butter',
+    'Roasted Chana', 'Banana', 'Apple', 'Orange', 'Papaya', 'Mango', 'Watermelon',
+    'Sprouted Moong', 'Whole Wheat Bread', 'Cheese', 'Makhana', 'Walnuts', 'Almonds'
+  ]);
+
+  const rankedFoods = foodDatabase.map((food) => {
+    const cost = Number(food.cost) || 1;
+    const protein = Number(food.protein) || 0;
+    const calories = Number(food.calories) || 1;
+    const proteinPer10Rupees = Number(((protein / cost) * 10).toFixed(1));
+    const costPerGramProtein = Number((cost / Math.max(protein, 0.1)).toFixed(2));
+    const proteinDensity = Math.min(100, Math.round(((protein * 4) / calories) * 100));
+    const hostelFriendly = hostelFriendlySet.has(food.name);
+
+    const badges = [];
+    if (proteinPer10Rupees >= 15) badges.push('👑 Budget King');
+    else if (proteinPer10Rupees >= 8) badges.push('⚡ High Value');
+
+    if (protein >= 15) badges.push('💪 High Protein');
+    if (hostelFriendly) badges.push('🎒 Hostel Ready');
+    if (food.vegetarian && protein >= 10) badges.push('🌱 Veg Power');
+
+    return {
+      ...food,
+      allergens: getFoodAllergens(food),
+      proteinPer10Rupees,
+      costPerGramProtein,
+      proteinDensity,
+      hostelFriendly,
+      badges,
+    };
+  });
+
+  res.json({
+    foods: rankedFoods,
+    note: 'Rankings calculated from catalog serving size and estimated local Indian prices.',
+  });
+});
+
 router.post('/meal', requireAuth, async (req, res, next) => {
   try {
     if (!Array.isArray(req.body.foods) || req.body.foods.length === 0) {

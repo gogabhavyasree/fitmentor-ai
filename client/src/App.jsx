@@ -14,15 +14,24 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminUsersPage from './pages/AdminUsersPage';
 import WeeklySchedulePage from './pages/WeeklySchedulePage';
 import DailyCoachPage from './pages/DailyCoachPage';
+import ProteinFinderPage from './pages/ProteinFinderPage';
+import MacroCalculatorPage from './pages/MacroCalculatorPage';
+import GroceryPlannerPage from './pages/GroceryPlannerPage';
+import HabitTrackerPage from './pages/HabitTrackerPage';
+import VoiceCoachWidget from './components/VoiceCoachWidget';
 
 const navigation = [
   { label: 'Dashboard', path: '/' },
+  { label: 'Habits & Water', path: '/habits' },
   { label: 'Daily Coach', path: '/daily-coach' },
   { label: 'AI Workout', path: '/ai-workout' },
   { label: 'Weekly Calendar', path: '/schedule' },
   { label: 'Form Check', path: '/form-check' },
+  { label: 'Protein Finder', path: '/protein-finder' },
+  { label: 'Macro Calculator', path: '/calculator' },
   { label: 'Food Nutrition', path: '/food-nutrition' },
   { label: 'Budget Diet', path: '/budget-diet' },
+  { label: 'Grocery Checklist', path: '/grocery-planner' },
   { label: 'Mess Assistant', path: '/mess-assistant' },
   { label: 'Progress', path: '/progress' },
   { label: 'Fitness Profile', path: '/fitness-profile' },
@@ -250,6 +259,7 @@ const AppShell = ({ user, onLogout, children }) => {
         </header>
         <InAppReminder />
         <div className="page-content">{children}</div>
+        <VoiceCoachWidget />
       </main>
     </div>
   );
@@ -364,6 +374,38 @@ function App() {
           <ProtectedRoute user={user}>
             <AppShell user={user} onLogout={handleLogout}>
               <ProgressPage />
+            </AppShell>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/habits" element={
+          <ProtectedRoute user={user}>
+            <AppShell user={user} onLogout={handleLogout}>
+              <HabitTrackerPage user={user} />
+            </AppShell>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/protein-finder" element={
+          <ProtectedRoute user={user}>
+            <AppShell user={user} onLogout={handleLogout}>
+              <ProteinFinderPage user={user} />
+            </AppShell>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/calculator" element={
+          <ProtectedRoute user={user}>
+            <AppShell user={user} onLogout={handleLogout}>
+              <MacroCalculatorPage user={user} setUser={setUser} />
+            </AppShell>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/grocery-planner" element={
+          <ProtectedRoute user={user}>
+            <AppShell user={user} onLogout={handleLogout}>
+              <GroceryPlannerPage />
             </AppShell>
           </ProtectedRoute>
         } />

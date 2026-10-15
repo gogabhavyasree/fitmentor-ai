@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import DashboardHabitWidget from '../components/DashboardHabitWidget';
 
 function DashboardPage() {
   const [dashboard, setDashboard] = useState(null);
@@ -54,6 +55,40 @@ function DashboardPage() {
           <p>Check in on sleep, stress, recovery, and time. Get a plan that adapts to your day.</p>
         </div>
         <Link className="primary-button" to="/daily-coach">Get today’s guidance</Link>
+      </section>
+
+      <DashboardHabitWidget user={dashboard.user} />
+
+      {/* Quick Fitness Tools Bar */}
+      <section className="dashboard-quick-tools">
+        <Link to="/protein-finder" className="dash-tool-card">
+          <span className="tool-emoji">⚡</span>
+          <div>
+            <strong>Protein Finder</strong>
+            <small>Best protein per ₹ in India</small>
+          </div>
+        </Link>
+        <Link to="/calculator" className="dash-tool-card">
+          <span className="tool-emoji">🎯</span>
+          <div>
+            <strong>Macro Calculator</strong>
+            <small>BMR, TDEE & macro targets</small>
+          </div>
+        </Link>
+        <Link to="/grocery-planner" className="dash-tool-card">
+          <span className="tool-emoji">🛒</span>
+          <div>
+            <strong>Grocery Checklist</strong>
+            <small>Weekly food shopping list</small>
+          </div>
+        </Link>
+        <Link to="/habits" className="dash-tool-card">
+          <span className="tool-emoji">🔥</span>
+          <div>
+            <strong>Habit Tracker</strong>
+            <small>Streaks & 7-day consistency</small>
+          </div>
+        </Link>
       </section>
 
       <div className="metric-grid">

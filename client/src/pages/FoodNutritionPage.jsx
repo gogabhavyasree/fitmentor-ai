@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { buildMealSummary } from '../data/foodData';
 
 function FoodNutritionPage({ user }) {
@@ -95,7 +96,10 @@ function FoodNutritionPage({ user }) {
           <h1>Food Nutrition</h1>
           <p className="page-intro">Browse everyday foods and build a meal from estimated serving nutrition.</p>
         </div>
-        <span className="badge">{foods.length} foods</span>
+        <div className="header-actions">
+          <Link to="/protein-finder" className="secondary-button">⚡ Protein Finder</Link>
+          <Link to="/calculator" className="primary-button">🎯 Macro Calculator</Link>
+        </div>
       </div>
 
       <p className="estimate-note">Values are estimates per serving shown. Actual nutrition varies with recipe, brand, and portion size.</p>
@@ -176,6 +180,14 @@ function FoodNutritionPage({ user }) {
                 <div><span>Carbs</span><strong>{totals.carbs.toFixed(1)}<small> g</small></strong></div>
                 <div><span>Fat</span><strong>{totals.fat.toFixed(1)}<small> g</small></strong></div>
               </div>
+              {user?.targetCalories && user?.targetProtein ? (
+                <div className="macro-goal-progress-box">
+                  <span className="goal-box-title">🎯 Goal Comparison</span>
+                  <div className="goal-progress-text">
+                    This meal provides <strong>{Math.round((totals.calories / user.targetCalories) * 100)}%</strong> of your daily calories ({totals.calories.toFixed(0)} / {user.targetCalories} kcal) and <strong>{Math.round((totals.protein / user.targetProtein) * 100)}%</strong> of your daily protein target ({totals.protein.toFixed(0)} / {user.targetProtein}g).
+                  </div>
+                </div>
+              ) : null}
               <button className="primary-button" onClick={saveMeal}>Save meal to history</button>
             </>
           ) : (
