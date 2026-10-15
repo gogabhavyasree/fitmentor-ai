@@ -1,5 +1,7 @@
 # FitMentor AI
 
+> **Live Public URL:** [https://fitmentor-ai-x97j.onrender.com](https://fitmentor-ai-x97j.onrender.com)
+
 FitMentor AI is a student-built full-stack fitness and nutrition project built with React, Express, MongoDB, and EJS. It gives users a dashboard, AI-style workout generator, nutrition planner, mess assistant, progress tracking, and admin tools.
 
 ## Folder structure
