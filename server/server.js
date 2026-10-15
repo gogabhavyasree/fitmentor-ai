@@ -6,6 +6,13 @@ const MongoStore = require('connect-mongo');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const { randomBytes } = require('crypto');
+const dns = require('dns');
+
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+} catch (err) {
+  console.warn('DNS server customization skipped, using default resolvers.');
+}
 
 const authRoutes = require('./routes/authRoutes');
 const workoutRoutes = require('./routes/workoutRoutes');
